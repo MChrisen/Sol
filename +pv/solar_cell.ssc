@@ -1,0 +1,57 @@
+component solar_cell
+% Single-diode + De Soto. Rsh constant => G=0 OK.
+
+    nodes
+        p = foundation.electrical.electrical; % +:left
+        n = foundation.electrical.electrical; % -:right
+    end
+
+    inputs
+        G = {1000, 'W/m^2'};
+    end
+
+    parameters
+        IL_ref  = {8.627, 'A'};
+        I0_ref  = {4.5202e-11, 'A'};
+        a_ref   = {0.87812, 'V'};
+        Rs      = {0.20368, 'Ohm'};
+        Rsh_ref = {264.82, 'Ohm'};
+        alpha   = {0.00431, 'A/K'};
+        Gref    = {1000, 'W/m^2'};
+        T       = {298.15, 'K'};
+        Tref    = {298.15, 'K'};
+        Eg_ref  = {1.121, 'eV'};
+        dEgdT   = {0.0002677, '1/K'};
+        kB      = {8.617333262e-5, 'eV/K'};
+    end
+
+    variables
+        i = {0, 'A'};
+        v = {0, 'V'};
+    end
+
+    branches
+        i : n.i -> p.i;
+    end
+
+    intermediates
+        IL = (G/Gref) * (IL_ref + alpha*(T - Tref));
+        a  = a_ref * (T/Tref);
+        Eg = Eg_ref * (1 - dEgdT*(T - Tref));
+        I0 = I0_ref * (T/Tref)^3 * exp((Eg_ref/Tref - Eg/T)/kB);
+        Rsh = Rsh_ref;
+    end
+
+    equations
+        v == p.v - n.v;
+        i == IL - I0*(exp((v + i*Rs)/a) - 1) - (v + i*Rs)/Rsh;
+    end
+
+    annotations
+        Eg_ref : ExternalAccess = none;
+        dEgdT  : ExternalAccess = none;
+        kB     : ExternalAccess = none;
+        Gref   : ExternalAccess = none;
+        Tref   : ExternalAccess = none;
+    end
+end
