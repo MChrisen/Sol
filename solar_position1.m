@@ -6,20 +6,27 @@ theta_z = 0;
 lat = 57.05;
 lon = 9.92;
 
-t_utc = datetime(2024,1,1,0,0,0,'TimeZone','UTC') + seconds(t); %Beregner datatime ud fra simuleringstidspunkt
+t_utc = datetime(2025,1,1,0,0,0,'TimeZone','UTC') + seconds(t); %Beregner datatime ud fra simuleringstidspunkt
+
 
 % t_utc: datetime UTC
 % lat, lon: grader (lon øst-positiv)
 dnum = datenum(datetime(t_utc,'TimeZone','UTC')); % Dette giver en talværdi der repræsenterer det specifikke tidspunkt.
 yy   = year(t_utc);
 dayn = dnum - datenum(yy,1,1) + 1;    % giver nummer dag på året, 30 jan = 30
+gy = 2*pi*(dayn-1)/365; % dagvinkel
 
 % beregner aksehældning (deklination varierer mellem plus minus 23.4)
-delta_deg = -23.44 * cosd(360/365 * (dayn + 10));
+%delta_deg = -23.44 * cosd(360/365 * (dayn + 10)); % Cooper
+delta = 0.006918 ...
+    - 0.399912*cos(gy)   + 0.070257*sin(gy) ...
+    - 0.006758*cos(2*gy) + 0.000907*sin(2*gy) ...
+    - 0.002697*cos(3*gy) + 0.001480*sin(3*gy); % Spencer
+delta_deg = rad2deg(delta);
 
 %equation of time, Spencer
 utc_hour = hour(t_utc) + minute(t_utc)/60 + second(t_utc)/3600;
-gy = 2*pi*(dayn-1)/365; % Day angle
+
 Et = 229.18*(0.000075 + 0.001868*cos(gy) - 0.032077*sin(gy) - 0.014615*cos(2*gy) - 0.040849*sin(2*gy));  % minutter
 solar_hour = utc_hour + lon/15 + Et/60; % 15° = 1 time (I dette tilfælde betyder det at solen står direkte syd kl 12 utc + 0,66(lon/15))
 
