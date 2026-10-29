@@ -26,10 +26,23 @@ G_cell = 1000 * ones(Ns,1);
 %G_cell(1) = 0;
 %G_cell(1) = 500;
 
-% række geometri
-L = 0; % Skrå længde af modul
-P = 0; %Pitch, vandret afstand mellem ens punkter på to naborækker (underkant til underkant)
-beta = 0; %Panelts hældning fra vandret
-gamma_m = 0; %modulets azimut. 
+% Geometri mm.
+beta_p      = 35;          % hældning
+gamma_p     = 180;         % modulazimut, samme konvention som gamma_s (syd = 180)
+GCR         = 0.5;        % dækningsgrad L/d
+rho         = 0.20;        % albedo
+b0          = 0.05;        % ASHRAE-koefficient
+orientering = 'landskab';  % 'portraet' eller 'landskab'
+c_celle     = 0.156;       % cellens sidelængde [m]  <- mål
+p_celle     = 0.159;       % pitch, celle + mellemrum [m]  <- mål
+m           = NaN;         % underkant -> første celle [m]
 
-GCR = L/P;
+
+% Tid og vejrdata
+dt = 600;                                                   % tidsskridt [s]
+load('pvgis_data.mat', 't_k', 'Gh', 'Gbn', 'Gdh', 'off');   % til lookup-tabellerne
+
+% Alt til Celleindstråling-subsystemet
+[P, geo] = skygge_parametre('GCR', GCR, 'orientering', orientering, ...
+    'beta_p', beta_p, 'gamma_p', gamma_p, 'rho', rho, 'b0', b0, ...
+    'c_celle', c_celle, 'p_celle', p_celle, 'm', m);
