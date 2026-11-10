@@ -24,7 +24,7 @@ V_oc_single = 22.8/Ns;
 % Celler
 G_cell = 1000 * ones(Ns,1);
 %G_cell(1) = 0;
-%G_cell(1) = 500;
+%G_cell(2) = 500;
 
 % Geometri mm.
 beta_p      = 35;          % hældning
