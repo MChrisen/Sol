@@ -11,7 +11,7 @@ Ns    = 60;
 % En celle
 IL_ref  = IL_m;
 I0_ref  = I0_m;
-a_ref   = a_m  / Ns;      % 0.02439 V
+a_ref   = a_m  / Ns;      % 0.  02439 V
 Rs      = Rs_m / Ns;      % 0.00566 Ohm
 Rsh_ref = Rsh_m / Ns;     
 alpha   = alpha_m;
@@ -29,7 +29,7 @@ G_cell = 1000 * ones(Ns,1);
 % Geometri mm.
 beta_p      = 35;          % hældning
 gamma_p     = 180;         % modulazimut, samme konvention som gamma_s (syd = 180)
-GCR         = 0.5;        % dækningsgrad L/d
+GCR         = 0.991/1.69;        % dækningsgrad L/d
 rho         = 0.20;        % albedo
 b0          = 0.05;        % ASHRAE-koefficient
 orientering = 'landskab';  % 'portraet' eller 'landskab'
@@ -46,3 +46,12 @@ load('pvgis_data.mat', 't_k', 'Gh', 'Gbn', 'Gdh', 'off');   % til lookup-tabelle
 [P, geo] = skygge_parametre('GCR', GCR, 'orientering', orientering, ...
     'beta_p', beta_p, 'gamma_p', gamma_p, 'rho', rho, 'b0', b0, ...
     'c_celle', c_celle, 'p_celle', p_celle, 'm', m);
+
+
+%Kald til cellemodel
+load_system('SOLTEST');
+set_param('SOLTEST', 'FastRestart', 'off');
+set_param('SOLTEST', 'SignalLogging', 'off', 'InspectSignalLogs', 'off', ...
+    'SaveOutput', 'off', 'SaveState', 'off', 'SaveFinalState', 'off', 'SimscapeLogType', 'none');
+set_param('SOLTEST', 'FastRestart', 'on');
+Simulink.sdi.clear;
