@@ -16,6 +16,7 @@ component solar_cell
         a_ref   = {0.87812, 'V'};
         Rs      = {0.20368, 'Ohm'};
         Rsh_ref = {264.82, 'Ohm'};
+        Geps    = {1, 'W/m^2'};   % floor: giver Rsh(G=0) = 1000*Rsh_ref
         alpha   = {0.00431, 'A/K'};
         Gref    = {1000, 'W/m^2'};
         T       = {298.15, 'K'};
@@ -39,12 +40,12 @@ component solar_cell
         a  = a_ref * (T/Tref);
         Eg = Eg_ref * (1 - dEgdT*(T - Tref));
         I0 = I0_ref * (T/Tref)^3 * exp((Eg_ref/Tref - Eg/T)/kB);
-        Rsh = Rsh_ref;
+        Gsh = (G + Geps) / (Gref * Rsh_ref);   % shunt-konduktans, ingen division med G
     end
 
     equations
         v == p.v - n.v;
-        i == IL - I0*(exp((v + i*Rs)/a) - 1) - (v + i*Rs)/Rsh;
+        i == IL - I0*(exp((v + i*Rs)/a) - 1) - (v + i*Rs)*Gsh;
     end
 
     annotations
